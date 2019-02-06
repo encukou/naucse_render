@@ -9,6 +9,8 @@ from pathlib import Path
 import datetime
 import textwrap
 
+from jinja2 import Markup
+
 from .load import read_yaml
 from .markdown import convert_markdown
 
