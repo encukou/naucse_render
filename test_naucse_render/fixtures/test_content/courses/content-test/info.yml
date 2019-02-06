@@ -1,0 +1,19 @@
+title: A course for testing content
+
+sessions:
+- title: Special materials
+  slug: apecial
+  materials:
+  - title: A URL
+    url: https://nauc.se
+  - title: A note
+    url: null
+- title: Static file materials
+  slug: static
+  materials:
+  - title: A static text file
+    static: report.txt
+  - title: A static HTML page
+    static: slides.html
+  - title: A static image
+    static: smile.png

@@ -1,0 +1,35 @@
+api_version:
+- 0
+- 0
+course:
+    sessions:
+    -   materials:
+        -   external_url: https://nauc.se
+            title: A URL
+            type: none-link
+        -   title: A note
+            type: special
+        slug: apecial
+        source_file: courses/content-test/info.yml
+        title: Special materials
+    -   materials:
+        -   slug: report.txt
+            static_file:
+                path: courses/content-test/static/report.txt
+            title: A static text file
+            type: special
+        -   slug: slides.html
+            static_file:
+                path: courses/content-test/static/slides.html
+            title: A static HTML page
+            type: special
+        -   slug: smile.png
+            static_file:
+                path: courses/content-test/static/smile.png
+            title: A static image
+            type: special
+        slug: static
+        source_file: courses/content-test/info.yml
+        title: Static file materials
+    source_file: courses/content-test/info.yml
+    title: A course for testing content

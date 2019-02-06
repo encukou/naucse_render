@@ -13,6 +13,7 @@ from jinja2 import Markup
 
 from .load import read_yaml
 from .markdown import convert_markdown
+from .lesson import get_static_files
 
 
 def encode_to_json(value):
@@ -22,10 +23,10 @@ def encode_to_json(value):
         return {k: encode_to_json(v) for k, v in value.items()}
     elif isinstance(value, (list, tuple)):
         return [encode_to_json(v) for v in value]
-    elif isinstance(value, (str, int, bool, type(None))):
-        return value
     elif isinstance(value, Markup):
         return str(value)
+    elif isinstance(value, (str, int, bool, type(None))):
+        return value
     raise TypeError(value)
 
 
@@ -101,7 +102,8 @@ def get_course(course_slug: str, *, path='.', version=None):
 
         # Update all materials
         for material in session.get('materials', []):
-            update_material(material, vars=info.get('vars'), path=base_path)
+            update_material(
+                session, material, vars=info.get('vars'), path=base_path)
 
         # Convert Markdown in "description" to HTML
         if 'description' in session:
@@ -126,7 +128,7 @@ def get_course(course_slug: str, *, path='.', version=None):
     }
 
 
-def update_material(material, vars=None, *, path):
+def update_material(session, material, vars=None, *, path):
     """Update material entry: mainly, add computed fields"""
     # All materials should have a "type", as used for the icon in lists
     lesson_slug = material.pop('lesson', None)
@@ -136,6 +138,8 @@ def update_material(material, vars=None, *, path):
         if material.pop('url', None):
             pass
             # XXX: raise ValueError(f'Material {material} has URL')
+        if material.pop('static', None):
+            raise ValueError(f'Material {material} has a static file')
         material.setdefault('type', 'lesson')
         if 'title' not in material:
             # Set title based on the referenced lesson
@@ -144,10 +148,24 @@ def update_material(material, vars=None, *, path):
     else:
         # External link (or link-less entry)
         url = material.pop('url', None)
+        static = material.pop('static', None)
         if url:
             material['external_url'] = url
             # XXX: Probably a bug; this should be just 'link'
             material.setdefault('type', 'none-link')
+            if static:
+                raise ValueError('`url` and `static_file` are exclusive')
+        elif static:
+            session_path = path.joinpath(session['source_file']).parent
+            filename = session_path / 'static' / static
+            if filename.exists():
+                material['static_file'] = {
+                    'path': str(filename.relative_to(path)),
+                }
+            else:
+                raise FileNotFoundError(filename)
+            material.setdefault('slug', static)
+            material.setdefault('type', 'special')
         else:
             material.setdefault('type', 'special')
 
