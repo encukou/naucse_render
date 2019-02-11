@@ -18,7 +18,7 @@ def encode_for_json(value):
         }
 
     elif isinstance(value, (list, tuple)):
-        # Sequences: Convert all items
+        # Sequences: Convert all items and always use lists
         return [encode_for_json(v) for v in value]
 
     elif isinstance(value, PurePath):
@@ -35,4 +35,5 @@ def encode_for_json(value):
         return value
 
     # Note: Floats are inexact, and avoided intentionally. Add them if needed.
-    raise TypeError(value)
+    raise TypeError(
+        f'{value} ({type(value).__name__}) not supported by encode_for_json()')
