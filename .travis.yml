@@ -16,7 +16,6 @@ matrix:
       # Get Python 3.7 from Chocolatey
       language: sh
       python: 3.7
-      env: PYTHON=py
       before_install:
         - choco install python --version 3.7
         - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
@@ -44,3 +43,7 @@ install:
 
 script:
 - $PYTHON -m pytest test_naucse_render
+
+after_script:
+- echo "Suplementary logs:"
+- cat .arca/naucse.log
